@@ -65,7 +65,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <version>3.1.0</version>
             <!--某些依赖只需参与编译，无须参与打包，将scope设置为provided-->
             <scope>provided</scope>
         </dependency>
