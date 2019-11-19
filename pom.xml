@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.eastlegend</groupId>
+    <artifactId>smartframework</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+
+    <!--1、可以设置下打包部署相关信息，此处略-->
+    <!--<repositories></repositories>-->
+
+    <!--2、项目相关特性设置-->
+    <properties>
+        <!--统一源码编码为UTF-8-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--统一管理版本-->
+        <!--<spring-version>4.3.25.RELEASE</spring-version>-->
+    </properties>
+
+    <!--3、插件管理-->
+    <build>
+        <!--打包文件名-->
+        <finalName>smartframework</finalName>
+
+        <!--.xml等资源相关，此处略-->
+      <!--  <resources>
+            <resource>
+                <directory>src/</directory>
+                <includes></includes>
+                <excludes></excludes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>-->
+
+        <plugins>
+            <!--Complile 源码和编译输出的JDK版本-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <!--<encoding>UTF-8</encoding>-->
+                </configuration>
+            </plugin>
+
+            <!--maven打包时跳过单元测试，可选-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--4、依赖管理-->
+    <dependencies>
+        <!--Servlet-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <!--某些依赖只需参与编译，无须参与打包，将scope设置为provided-->
+            <scope>provided</scope>
+        </dependency>
+
+        <!--JSP-->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--JSTL-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <!--5、profile配置-->
+<!--    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <enviroment></enviroment>
+                &lt;!&ndash;dubbo、redis、kafka、其他配置等&ndash;&gt;
+            </properties>
+        </profile>
+    </profiles>-->
+
+</project>
