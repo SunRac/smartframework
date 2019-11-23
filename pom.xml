@@ -121,6 +121,12 @@
             <version>4.0</version>
         </dependency>
 
+        <!--Dbutils帮助建立数据库与实体类的映射-->
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.7</version>
+        </dependency>
 
 
     </dependencies>

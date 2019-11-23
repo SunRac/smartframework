@@ -6,7 +6,7 @@
 public class TestClass {
     public static void main(String[] args) {
 //        testInit();
-        System.out.println(String.valueOf(2));
+//        System.out.println(String.valueOf(2));
     }
 
     private static void testInit() {
