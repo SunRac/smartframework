@@ -5,6 +5,11 @@
  **/
 public class TestClass {
     public static void main(String[] args) {
+//        testInit();
+        System.out.println(String.valueOf(2));
+    }
+
+    private static void testInit() {
         Demo1121 demo1121 = new Demo1121("avalue");
         demo1121.d = "ddd";
         System.out.println(demo1121.a);//null
