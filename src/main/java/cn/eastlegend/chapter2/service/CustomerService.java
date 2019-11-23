@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author java_shj
@@ -27,6 +24,7 @@ public class CustomerService {
      * 问题3：把数据库映射到bean，手动来映射很麻烦，手麻，使用dbUtils来帮助自动映射
      * 问题4：此时，操作数据库必须要传入connection，怎么能使connection对程序透明呢？
      * ------只需要确保一个线程只有一个connection，在工具类中使用ThreadLocal来保存connection
+     * 问题5：频繁的建立、关闭数据库连接是一种巨大大开销。可以通过数据库管理池来优化
      */
  /*   private static final String DRIVER;
     private static final String URL;
@@ -45,6 +43,8 @@ public class CustomerService {
             LOGGER.error("加载数据库驱动异常：", e);
         }
     }*/
+
+    private static final String TABLE_NAME = "customer";
     /**
      * 获取客户列表
      */
@@ -91,18 +91,20 @@ public class CustomerService {
     }
 
     public Customer getCustomer(long id){
-        return null;
+        String sql = "SELECT * from " + TABLE_NAME + "WHERE id=?";
+        return DatabaseHelper.queryEntity(Customer.class, sql, id);
     }
 
     public boolean createCustomer(Map<String, Object> fieldMap){
-        return false;
+        return DatabaseHelper.insertEntity(TABLE_NAME, fieldMap);
     }
 
     public boolean updateCustomer(long id ,Map<String, Object> fieldMap){
-        return false;
+        return DatabaseHelper.updateEntity(TABLE_NAME, id, fieldMap);
     }
 
-    public boolean deleteCustomer(long id){
-        return false;
+    //使用逻辑删除，此时fieldMap为数据库中的删除标识字段及删除的值：0或者1
+    public boolean deleteCustomer(long id, Map<String, Object> fieldMap){
+        return DatabaseHelper.updateEntity(TABLE_NAME, id, fieldMap);
     }
 }
