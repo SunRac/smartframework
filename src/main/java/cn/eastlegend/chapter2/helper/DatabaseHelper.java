@@ -28,7 +28,7 @@ public class DatabaseHelper {
     private static final QueryRunner QUERY_RUNNER = new QueryRunner();
 
     //使用threadLocal来保存当前线程的数据库连接
-    private static final ThreadLocal<Connection> Thread_Local_4Conn = new ThreadLocal<>();
+    private static final ThreadLocal<Connection> CONNECTION_THREAD_LOCAL = new ThreadLocal<>();
 
     private static final String DRIVER;
     private static final String URL;
@@ -54,11 +54,16 @@ public class DatabaseHelper {
      * @return
      */
     public static Connection getConnection() {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            LOGGER.error("查询数据库异常：", e);
+        Connection connection = CONNECTION_THREAD_LOCAL.get();
+        if( connection == null) {
+            try {
+                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            } catch (SQLException e) {
+                LOGGER.error("查询数据库异常：", e);
+                throw new RuntimeException(e);
+            } finally {
+                CONNECTION_THREAD_LOCAL.set(connection);
+            }
         }
         return connection;
     }
@@ -66,12 +71,15 @@ public class DatabaseHelper {
     /**
      * 把关闭数据库的代码抽取出来
      */
-    public static void closeConnection(Connection connection) {
+    public static void closeConnection() {
+        Connection connection = CONNECTION_THREAD_LOCAL.get();
         if(connection != null ) {
             try {
                 connection.close();
             } catch (SQLException e) {
                 LOGGER.error("关闭数据连接异常：", e);
+            } finally {
+                CONNECTION_THREAD_LOCAL.remove();
             }
         }
     }
@@ -79,18 +87,18 @@ public class DatabaseHelper {
     /**
      * 查询实体列表
      */
-    public static <T> List<T> queryEntityList(Class<T> entityClass, Connection connection,String sql, Object... params) {
+    public static <T> List<T> queryEntityList(Class<T> entityClass,String sql, Object... params) {
         List<T> entityList = null;
         try {
+            Connection connection = getConnection();
             entityList = QUERY_RUNNER.query(connection, sql, new BeanListHandler<>(entityClass));
         } catch (SQLException e) {
             LOGGER.error("查询实体列表异常：", e);
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         } finally {
-            closeConnection(connection);
+            closeConnection();
         }
         return entityList;
-
     }
 
 

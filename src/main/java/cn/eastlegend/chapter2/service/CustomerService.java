@@ -25,7 +25,8 @@ public class CustomerService {
      * 问题1：加载驱动、数据库连接的方法其他类无法复用，可以抽取到一个工具类中
      * 问题2：执行sql、关闭连接有太多的try catch也抽取出来
      * 问题3：把数据库映射到bean，手动来映射很麻烦，手麻，使用dbUtils来帮助自动映射
-     * 问题4：确保一个线程只有一个connection，在工具类中使用ThreadLocal来保存connection
+     * 问题4：此时，操作数据库必须要传入connection，怎么能使connection对程序透明呢？
+     * ------只需要确保一个线程只有一个connection，在工具类中使用ThreadLocal来保存connection
      */
  /*   private static final String DRIVER;
     private static final String URL;
@@ -53,8 +54,9 @@ public class CustomerService {
 
     public List<Customer> getCustomerList() {
         String sql = "select * from customer";
-        Connection connection = DatabaseHelper.getConnection();
-        List<Customer> customerList = DatabaseHelper.queryEntityList(Customer.class, connection, sql);
+        //现在,connection对开发者透明了
+//        Connection connection = DatabaseHelper.getConnection();
+        List<Customer> customerList = DatabaseHelper.queryEntityList(Customer.class, sql);
         return customerList;
      /*   Connection connection = null;
         String sql = "select * from customer";
