@@ -2,6 +2,7 @@ package cn.eastlegend.chapter2.helper;
 
 import cn.eastlegend.util.CollectionUtil;
 import cn.eastlegend.util.PropsUtil;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
@@ -9,6 +10,8 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.Keymap;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -35,6 +38,9 @@ public class DatabaseHelper {
     //使用threadLocal来保存当前线程的数据库连接
     private static final ThreadLocal<Connection> CONNECTION_THREAD_LOCAL = new ThreadLocal<>();
 
+//    数据库连接池
+    private static final BasicDataSource DATA_SOURCE;
+
     private static final String DRIVER;
     private static final String URL;
     private static final String USERNAME;
@@ -46,11 +52,17 @@ public class DatabaseHelper {
         URL = props.getProperty("jdbc.url");
         USERNAME = props.getProperty("jdbc.username");
         PASSWORD = props.getProperty("jdbc.password");
-        try {
+        /*try {
             Class.forName(DRIVER);
         } catch (ClassNotFoundException e) {
             LOGGER.error("加载数据库驱动异常：", e);
-        }
+        }*/
+
+        DATA_SOURCE = new BasicDataSource();
+        DATA_SOURCE.setDriverClassName(DRIVER);
+        DATA_SOURCE.setUrl(URL);
+        DATA_SOURCE.setUsername(USERNAME);
+        DATA_SOURCE.setPassword(PASSWORD);
     }
 
 
@@ -62,7 +74,8 @@ public class DatabaseHelper {
         Connection connection = CONNECTION_THREAD_LOCAL.get();
         if( connection == null) {
             try {
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+//                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+                connection = DATA_SOURCE.getConnection();
             } catch (SQLException e) {
                 LOGGER.error("查询数据库异常：", e);
                 throw new RuntimeException(e);
@@ -100,9 +113,11 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             LOGGER.error("查询实体列表异常：", e);
             throw new RuntimeException(e);
-        } finally {
-            closeConnection();
         }
+        //把连接交给数据库连接池来管理，不需要再手动关闭连接了
+        /*finally {
+            closeConnection();
+        }*/
         return entityList;
     }
 
@@ -117,8 +132,6 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             LOGGER.error("查询单个实体异常", e);
             throw new RuntimeException(e);
-        } finally {
-            closeConnection();
         }
         return entity;
     }
@@ -128,16 +141,25 @@ public class DatabaseHelper {
      * 方案1：更普遍的一个方法：查询后返回一个map
      * 方案2：新增一个对应的实体类
      */
-    public static List<Map<String, Object>> executeQuery(String sql, Object... params) {
+    public static List<Map<String, Object>> executeQuery(String tableName, Map<String, Object> fieldMap) {
         List<Map<String, Object>> result = null;
+        String sql = "SELECT * FROMM " + tableName;
+        Object[] params = fieldMap.values().toArray();
         try {
-            Connection connection = getConnection();
-            result = QUERY_RUNNER.query(connection, sql, new MapListHandler(), params);
+            if(CollectionUtil.isMapEmpty(fieldMap)){
+                sql += " WHERE ";
+                StringBuilder columns = new StringBuilder();
+                for (String key : fieldMap.keySet()) {
+//                columns.append(key + "=" + fieldMap.get(key) + " AND " );
+                    columns.append(key + "=? AND " );
+                }
+                sql += columns.substring(0, columns.lastIndexOf("AND"));
+                Connection connection = getConnection();
+                result = QUERY_RUNNER.query(connection, sql, new MapListHandler(), params);
+            }
         } catch (SQLException e) {
             LOGGER.error("executeQuery查询异常，sql是：" + sql + "params是：" + params, e);
             throw new RuntimeException(e);
-        } finally {
-            closeConnection();
         }
         return result;
     }
@@ -154,8 +176,6 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             LOGGER.error("executeUpdate执行异常，sql是：" + sql + "params是：" + params, e);
             throw new RuntimeException(e);
-        } finally {
-            closeConnection();
         }
         return rows;
     }
@@ -205,10 +225,32 @@ public class DatabaseHelper {
      * 删除实体
      * 问题：生产环境一般都是逻辑删除，此处仅为示例
      */
-    /*public static boolean deleteEntity(String talbeName, long id) {
+    public static boolean deleteEntity(String talbeName, long id) {
         String sql = "DELEETE FROM " + talbeName + " WHERE id=" + id;
         return executeUpdate(sql) == 1;
-    }*/
+    }
+    public static boolean deleteEntity(String tableName, long id, Map<String, Object> fieldMap) {
+        return updateEntity(tableName, id, fieldMap);
+    }
+
+    /**
+     * 执行sql文件，比如进行测试数据库的初始化等
+     * @param filePath classpath下的sql文件
+     */
+    public static void exectureSqlFile(String filePath) {
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            String sql;
+            while ((sql = bufferedReader.readLine()) != null) {
+                executeUpdate(sql);
+            }
+        } catch (IOException e) {
+            LOGGER.error("执行sql文件异常：", e);
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
 

@@ -25,6 +25,7 @@ public class CustomerService {
      * 问题4：此时，操作数据库必须要传入connection，怎么能使connection对程序透明呢？
      * ------只需要确保一个线程只有一个connection，在工具类中使用ThreadLocal来保存connection
      * 问题5：频繁的建立、关闭数据库连接是一种巨大大开销。可以通过数据库管理池来优化
+     * 问题6：目前只有查询所有以及根据Id，查询，实际用的更多的是复合条件查询，实现之
      */
  /*   private static final String DRIVER;
     private static final String URL;

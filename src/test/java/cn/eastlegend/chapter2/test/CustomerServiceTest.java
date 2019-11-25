@@ -1,5 +1,6 @@
 package cn.eastlegend.chapter2.test;
 
+import cn.eastlegend.chapter2.helper.DatabaseHelper;
 import cn.eastlegend.chapter2.model.Customer;
 import cn.eastlegend.chapter2.service.CustomerService;
 import org.junit.After;
@@ -9,6 +10,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author java_shj
@@ -24,7 +26,7 @@ public class CustomerServiceTest {
 
     @Before
     public void init(){
-        //TODO 初始化数据库
+        DatabaseHelper.exectureSqlFile("sql/customer_init.sql");
     }
 
     @Test
@@ -53,7 +55,10 @@ public class CustomerServiceTest {
     @Test
     public void deleteCustomerTest(){
         long id = 3;
-        boolean result = customerService.deleteCustomer(id);
+        Map<String, Object> fieldMap = new HashMap<>();
+        fieldMap.put("deleteFlag", 0);
+//        boolean result = customerService.deleteCustomer("customer", id);
+        boolean result = customerService.updateCustomer(id, fieldMap);
         Assert.assertTrue(result);
     }
 
