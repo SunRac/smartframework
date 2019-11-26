@@ -32,7 +32,7 @@ public class CustomerServiceTest {
     @Test
     public void getCustomerListTest(){
         List<Customer> customerList = customerService.getCustomerList();
-        Assert.assertEquals(2, customerList.size());
+        Assert.assertEquals(6, customerList.size());
     }
 
     @Test
@@ -48,6 +48,8 @@ public class CustomerServiceTest {
         fieldMap.put("name", "mary");
         fieldMap.put("contact", "john");
         fieldMap.put("telephone", "18612");
+        fieldMap.put("email", "18612@eastlegend.cn");
+        fieldMap.put("remark", "约翰");
         boolean result = customerService.createCustomer(fieldMap);
         Assert.assertTrue(result);
     }
@@ -58,7 +60,8 @@ public class CustomerServiceTest {
         Map<String, Object> fieldMap = new HashMap<>();
         fieldMap.put("deleteFlag", 0);
 //        boolean result = customerService.deleteCustomer("customer", id);
-        boolean result = customerService.updateCustomer(id, fieldMap);
+//        boolean result = customerService.updateCustomer(id, fieldMap);
+        boolean result = customerService.deleteCustomer(id, fieldMap);
         Assert.assertTrue(result);
     }
 

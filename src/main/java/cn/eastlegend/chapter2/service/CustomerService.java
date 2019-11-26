@@ -92,7 +92,7 @@ public class CustomerService {
     }
 
     public Customer getCustomer(long id){
-        String sql = "SELECT * from " + TABLE_NAME + "WHERE id=?";
+        String sql = "SELECT * from " + TABLE_NAME + " WHERE id=?";
         return DatabaseHelper.queryEntity(Customer.class, sql, id);
     }
 
