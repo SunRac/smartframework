@@ -34,7 +34,7 @@ public class Beetle extends  Inset {
     public static void main(String[] args) {
         System.out.println("4、基类、导出类静态变量初始化之后，准备创建子类对象了--main方法中");
         System.out.println("--------以下为实例化过程");
-        Beetle beetle = new Beetle();
+        Beetle beetle = new Beetle();//注释掉这1行，则不会创建对象
         System.out.println("\n 总结：\n" +
                 "以4为分界线，4之前加载class文件到内存中初始化静态变量，4之后开始分配内存，创建对象：\n" +
                 "1、静态域初始化，先初始化父类的静态域，再初始化子类静态域 \n" +
