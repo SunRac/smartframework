@@ -26,7 +26,7 @@ public class CustomerServiceTest {
 
     @Before
     public void init(){
-        DatabaseHelper.exectureSqlFile("sql/customer_init.sql");
+//        DatabaseHelper.exectureSqlFile("sql/customer_init.sql");
     }
 
     @Test
