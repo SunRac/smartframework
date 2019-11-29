@@ -1,6 +1,5 @@
 package cn.eastlegend.chapter2.test;
 
-import cn.eastlegend.chapter2.helper.DatabaseHelper;
 import cn.eastlegend.chapter2.model.Customer;
 import cn.eastlegend.chapter2.service.CustomerService;
 import org.junit.After;

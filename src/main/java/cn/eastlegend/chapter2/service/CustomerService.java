@@ -1,12 +1,10 @@
 package cn.eastlegend.chapter2.service;
 
-import cn.eastlegend.chapter2.helper.DatabaseHelper;
+import cn.eastlegend.helper.DatabaseHelper;
 import cn.eastlegend.chapter2.model.Customer;
-import cn.eastlegend.util.PropsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
 import java.util.*;
 
 /**

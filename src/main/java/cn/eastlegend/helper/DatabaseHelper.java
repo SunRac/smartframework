@@ -1,4 +1,4 @@
-package cn.eastlegend.chapter2.helper;
+package cn.eastlegend.helper;
 
 import cn.eastlegend.util.CollectionUtil;
 import cn.eastlegend.util.PropsUtil;
@@ -10,11 +10,8 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.Keymap;
 import java.io.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
