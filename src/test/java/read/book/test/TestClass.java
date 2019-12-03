@@ -5,10 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author java_shj
@@ -20,9 +17,10 @@ public class TestClass {
 //        testInit();
 //        System.out.println(String.valueOf(2));
 //        listOutOfBund();
-        testMd5();
+//        testMd5();
 //        positionMoveDemo();
 //        positionTest();
+        getShaSiignature();
     }
 
     public static void positionTest(){
@@ -96,6 +94,26 @@ public class TestClass {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void getShaSiignature(){
+        String token = "45574365240e45af92a3155d99f079b9";
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String param = "{\"token\":\""+ token+"\"}";
+        String OriginStr = token + timestamp + param;
+        System.out.printf("timestamp是：%s,OriginStr是：%s \n",timestamp,OriginStr);
+        try {
+            MessageDigest digester = MessageDigest.getInstance("SHA1");
+            digester.update(OriginStr.getBytes());
+            byte[] digest = digester.digest();
+            for (int i = 0; i < digest.length; i++) {
+                byte b = digest[i];
+                System.out.println(b);
+            }
+
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
