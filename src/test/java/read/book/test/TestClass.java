@@ -1,5 +1,7 @@
 package read.book.test;
 
+import cn.eastlegend.util.Sha1Util;
+
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -102,19 +104,25 @@ public class TestClass {
     public static void getShaSiignature(){
         String token = "45574365240e45af92a3155d99f079b9";
         String timestamp = String.valueOf(System.currentTimeMillis());
-        String param = "{\"token\":\""+ token+"\"}";
+        //这个token要从客户端拿，和上边的不是同一个
+        String paramToken = "666" ;
+        String param = "{\"token\":\""+ paramToken+"\"}";
         String OriginStr = token + timestamp + param;
-        System.out.printf("timestamp是：%s,OriginStr是：%s \n",timestamp,OriginStr);
+        System.out.printf("加密前明文OriginStr是：%s \n", OriginStr);
+        String signature = Sha1Util.getSha1(OriginStr);
+        System.out.println("加密后密文：" + signature);
+        //就可以发送请求了，记得1、powerKey、timestamp、signature添加到请求头
+        //2、paramToken
         try {
             MessageDigest digester = MessageDigest.getInstance("SHA1");
-            digester.update(OriginStr.getBytes());
+            digester.update(OriginStr.getBytes("UTF-8"));
             byte[] digest = digester.digest();
             for (int i = 0; i < digest.length; i++) {
                 byte b = digest[i];
                 System.out.println(b);
             }
 
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
