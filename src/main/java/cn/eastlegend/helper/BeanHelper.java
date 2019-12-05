@@ -14,7 +14,7 @@ import java.util.Set;
 public class BeanHelper {
 
     /**
-     * 定义bean映射（用户存放bean类与bean实例的映射关系）
+     * 定义bean映射（用户存放bean类与bean实例的映射关系），创建了bean实例
      */
     private static final Map<Class<?>, Object> BEAN_MAP = new HashMap<>();
 
