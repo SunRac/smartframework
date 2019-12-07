@@ -1,7 +1,6 @@
 package cn.eastlegend.bean;
 
 import cn.eastlegend.util.CastUtil;
-import org.omg.CORBA.Object;
 
 import java.util.Map;
 
