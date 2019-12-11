@@ -47,6 +47,16 @@ public class BeanHelper {
         return (T) BEAN_MAP.get(cls);
     }
 
+    /**
+     * 设置bean实例
+     * 把bean实例，比如代理对象放入框架底层的BEAN_MAP中，然后通过IOC注入
+     * @param clazz
+     * @param obj
+     */
+    public static void setBean(Class<?> clazz, Object obj) {
+        BEAN_MAP.put(clazz, obj);
+    }
+
 
 
 }

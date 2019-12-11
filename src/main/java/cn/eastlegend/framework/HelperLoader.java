@@ -1,9 +1,6 @@
 package cn.eastlegend.framework;
 
-import cn.eastlegend.helper.BeanHelper;
-import cn.eastlegend.helper.ClassHelper;
-import cn.eastlegend.helper.ControllerHelper;
-import cn.eastlegend.helper.IocHelper;
+import cn.eastlegend.helper.*;
 import cn.eastlegend.util.ClassUtil;
 
 /**
@@ -13,7 +10,8 @@ import cn.eastlegend.util.ClassUtil;
  **/
 public final class HelperLoader {
     public static void init() {
-        Class<?>[] clazzList = {ClassHelper.class, BeanHelper.class, IocHelper.class, ControllerHelper.class};
+        //Aophelper要位于IocHelper之前，因为需要先获取到代理对象才能注入
+        Class<?>[] clazzList = {ClassHelper.class, BeanHelper.class, AopHelper.class, IocHelper.class, ControllerHelper.class};
         for (Class<?> clazz : clazzList) {
             ClassUtil.loadClass(clazz.getName(), true);
         }

@@ -4,6 +4,7 @@ import cn.eastlegend.annotation.Controller;
 import cn.eastlegend.annotation.Service;
 import cn.eastlegend.util.ClassUtil;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +66,34 @@ public final class ClassHelper {
         Set<Class<?>> beanClassSet = new HashSet<>();
         beanClassSet.addAll(getControllerClassSet());
         beanClassSet.addAll(getServiceClassSet());
+        return beanClassSet;
+    }
+    /**
+     * 获取应用包下某父类（或接口）的所有子类
+     * @return
+     */
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superClazz) {
+        Set<Class<?>> beanClassSet = new HashSet<>();
+        for (Class<?> clazz : CLASS_SET) {
+            if(superClazz.isAssignableFrom(clazz) && superClazz != clazz) {
+                beanClassSet.add(clazz);
+            }
+        }
+        return beanClassSet;
+    }
+
+    /**
+     * 获取应用包名下带有某注解的所有类
+     *
+     * @return
+     */
+    public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClazz) {
+        Set<Class<?>> beanClassSet = new HashSet<>();
+        for (Class<?> clazz : CLASS_SET) {
+            if(clazz.isAnnotationPresent(annotationClazz)) {
+                beanClassSet.add(clazz);
+            }
+        }
         return beanClassSet;
     }
 
