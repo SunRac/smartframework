@@ -1,11 +1,16 @@
 package read.book.test;
 
-import java.io.PrintStream;
+import cn.eastlegend.util.HttpRequestUtil;
+import cn.eastlegend.util.JacksonUtil;
+import cn.eastlegend.util.Sha1Util;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author java_shj
@@ -20,7 +25,7 @@ public class TestClass {
 //        testMd5();
 //        positionMoveDemo();
 //        positionTest();
-        getShaSiignature();
+//        String s = generateSequence(6);
     }
 
     public static void positionTest(){
@@ -43,7 +48,7 @@ public class TestClass {
     }
 
     private static void positionMoveDemo() {
-        byte b = -26;
+        byte b = 26;
         System.out.println(Integer.toBinaryString(b));
         //111010
         System.out.println(Integer.toBinaryString(b >>>2));
@@ -99,23 +104,22 @@ public class TestClass {
         }
     }
 
-    public static void getShaSiignature(){
-        String token = "45574365240e45af92a3155d99f079b9";
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String param = "{\"token\":\""+ token+"\"}";
-        String OriginStr = token + timestamp + param;
-        System.out.printf("timestamp是：%s,OriginStr是：%s \n",timestamp,OriginStr);
+    public static String generateSequence(int length) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        String next = String.valueOf(random.nextInt());
+        char hexDigits[] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
         try {
-            MessageDigest digester = MessageDigest.getInstance("SHA1");
-            digester.update(OriginStr.getBytes());
-            byte[] digest = digester.digest();
-            for (int i = 0; i < digest.length; i++) {
-                byte b = digest[i];
-                System.out.println(b);
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(next.getBytes());
+            byte[] bytes = digest.digest();
+            char[] charArray = new char[length];
+            for (int i = 0; i < length; i++) {
+                byte thisByte = bytes[i];
+                charArray[i] = hexDigits[thisByte >>>4 & 0xf];
             }
-
+            return new String(charArray).toUpperCase();
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
