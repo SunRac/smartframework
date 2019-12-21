@@ -36,4 +36,8 @@ public final class ConfigHelper {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.APP_ASSET_PATH);
     }
 
+    //上传文件大小限制
+    public static int getUploadLimit() {
+        return PropsUtil.getInt(CONFIG_PROPS, ConfigConstant.APP_UPLOAD_LIMIT);
+    }
 }

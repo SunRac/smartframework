@@ -1,15 +1,14 @@
 package cn.eastlegend.framework;
 
 import cn.eastlegend.bean.*;
-import cn.eastlegend.helper.BeanHelper;
-import cn.eastlegend.helper.ConfigHelper;
-import cn.eastlegend.helper.ControllerHelper;
-import cn.eastlegend.util.CodeUtil;
-import cn.eastlegend.util.JacksonUtil;
-import cn.eastlegend.util.ReflectionUtil;
-import cn.eastlegend.util.StreamUtil;
+import cn.eastlegend.helper.*;
+import cn.eastlegend.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -33,6 +32,8 @@ import java.util.Map;
  **/
 @WebServlet(urlPatterns = "/", loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UploadHelper.class);
     @Override
     public void init(ServletConfig config) throws ServletException {
         //初始化Helper类,完成了创建实例、依赖注入、以及对请求和处理器的封装
@@ -47,6 +48,8 @@ public class DispatcherServlet extends HttpServlet {
         ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
         //设置处理静态资源servlet处理的请求路径
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+//        初始化上传文件助手类
+        UploadHelper.init(servletContext);
     }
 
     @Override
@@ -55,6 +58,10 @@ public class DispatcherServlet extends HttpServlet {
         //TODO 查看从req中得到的请求方式和路径
         String requestMethod = req.getMethod().toLowerCase();
         String requestPath = req.getPathInfo();
+//        跳过favicon.ico请求
+        if(requestPath.equals("/favicon.ico")) {
+            return ;
+        }
         Request request = new Request(requestMethod,requestPath);
         //获取Action处理器
         Handler handler = ControllerHelper.getHandler(request);
@@ -63,7 +70,7 @@ public class DispatcherServlet extends HttpServlet {
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerBean = BeanHelper.getBean(controllerClass);
             //创建请求参数对象
-            Map<String, Object> paramMap = new HashMap<>();
+    /*        Map<String, Object> paramMap = new HashMap<>();
             Enumeration<String> paramNames = req.getParameterNames();
             while (paramNames.hasMoreElements()) {
                 String paramName = paramNames.nextElement();
@@ -85,7 +92,14 @@ public class DispatcherServlet extends HttpServlet {
                     }
                 }
             }
-            Param param = new Param(paramMap);
+            Param param = new Param(paramMap);*/
+//            文件上传，对创建Param对象进行了封装
+            Param param;
+            if(UploadHelper.isMutipart(req)) {
+                param = UploadHelper.createParam(req);
+            } else {
+                param = RequestHelper.createParam(req);
+            }
             //调用Action方法
             Method actionMethod = handler.getActionMethod();
             //TODO 此处传入Param嘛？不是应该传入paramMap?
@@ -120,6 +134,49 @@ public class DispatcherServlet extends HttpServlet {
                 }
             }
 
+        }
+    }
+
+    /**
+     * 对View进行处理：视图View，跳转到页面
+     */
+
+    private void handleViewResult(View view, HttpServletRequest request, HttpServletResponse response) {
+        String path = view.getPath();
+        try {
+        if(StringUtils.isNotEmpty(path)) {
+            if(path.startsWith("/")) {
+                response.sendRedirect(request.getContextPath() + path);
+            } else {
+                Map<String, Object> model = view.getModel();
+                for (Map.Entry<String, Object> entry : model.entrySet()) {
+                    request.setAttribute(entry.getKey(), entry.getValue());
+                }
+                request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(request, response);
+            }
+        }
+        } catch (Exception e) {
+            LOGGER.error("处理视图view异常", e);
+        }
+    }
+
+    /**
+     * 对View进行处理：数据View，返回json数据
+     */
+    private void handleDataResult(View view, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> model = view.getModel();
+        if(CollectionUtil.isMapNotEmpty(model)) {
+            response.setContentType(ContentType.APPLICATION_JSON.getMimeType());
+            response.setCharacterEncoding("UTF-8");
+            try {
+            PrintWriter writer = response.getWriter();
+            String json = JacksonUtil.obj2json(model);
+            writer.write(json);
+            writer.flush();
+            writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
