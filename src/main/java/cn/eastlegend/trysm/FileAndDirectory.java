@@ -27,12 +27,12 @@ public class FileAndDirectory implements Iterable<File> {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("当前目录下文件有：\n");
+        sb.append("当前路径下下文件有：\n");
         for(File item : files) {
             sb.append(item.getName());
             sb.append("\n");
         }
-        sb.append("当前目录下目录有：\n");
+        sb.append("==============================\n当前路径下目录有：\n");
         for(File item : dirs) {
             sb.append(item.getName());
             sb.append("\n");
@@ -73,7 +73,7 @@ public class FileAndDirectory implements Iterable<File> {
     }
 
     public static void main(String[] args) {
-        System.out.println(recursionDir("."));
+        System.out.println(recursionDir("D:\\国创\\h5"));
     }
 
 
