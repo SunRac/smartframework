@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.0</version>
+            <version>4.1</version>
         </dependency>
 
         <!--Dbutils帮助建立数据库与实体类的映射-->
